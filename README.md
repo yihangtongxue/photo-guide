@@ -10,7 +10,11 @@
 ./gradlew assembleDebug
 ```
 
-APK 位于 `app/build/outputs/apk/debug/app-debug.apk`。GitHub Actions 在推送 main 或手动触发时构建并上传 debug APK。
+APK 位于 `app/build/outputs/apk/debug/app-debug.apk`。GitHub Actions 在推送 `main` 时构建 debug APK，发布到 GitHub Release，并直接附加 `photo-guide-v0.0.N.apk`。也可以在 `main` 上手动触发工作流，重试当前提交的发行。
+
+发行版本从 `v0.0.1` 开始，按已有的 `v0.0.N` tag 最大 patch 加一；`versionName` 为对应的 `0.0.N`，`versionCode` 为 N。工作流串行排队并通过推送 tag 预留版本；同一提交重跑会复用 tag 和 Release。预留后若构建失败，重新运行该提交的工作流即可继续发行。队列最多容纳 100 个等待中的运行，超出 GitHub 上限的运行需手动重试。请勿移动或删除发行 tag，也不要在同一提交上手动创建多个发行 tag。
+
+本地构建默认使用 `0.0.1` / `1`，也可传入 `-PappVersionName=0.0.2 -PappVersionCode=2`。这些 APK 使用 debug 签名，不适合正式上架。
 
 ## 安装与测试
 
